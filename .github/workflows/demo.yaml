@@ -21,7 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "This is an integration step"
+      - run: echo “hello” > hello.txt
       - run: exit 1
+      - name: save "hello"
+        uses: actions/upload-artifact@v2
+        with:
+          name: hello.txt
+          path: hello.txt
 
   prod:
     runs-on: ubuntu-latest
