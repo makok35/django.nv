@@ -19,8 +19,8 @@ jobs:
           python manage.py test taskManager
           echo "hello dude" > hello.txt
       - store_artifacts:
-        path: hello.txt
-        destination: circleci-docs
+          path: hello.txt
+          destination: circleci-docs
 
   integration:
     docker:
