@@ -11,25 +11,32 @@ jobs:
   test:
     docker:
       - image: python:3.6
+    requires: build
     steps:
       - checkout
       - run: |
           pip install -r requirements.txt
           python manage.py test taskManager
+          echo "hello dude" > hello.txt
+      - store_artifacts:
+        path: hello.txt
+        destination: circleci-docs
 
   integration:
     docker:
       - image: python:3.6
+    requires: test
     steps:
       - checkout
       - run:
           command: |
             echo "This is an integration step"
-            exit 1
+            exit 1 || true
 
   prod:
     docker:
       - image: python:3.6
+    requires: integration
     steps:
       - checkout
       - run: echo "This is a deploy step"
