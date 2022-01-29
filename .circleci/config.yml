@@ -1,3 +1,4 @@
+cat >.circleci/config.yml<<EOF
 jobs:
   build:
     docker:
@@ -16,15 +17,6 @@ jobs:
       - run: |
           pip install -r requirements.txt
           python manage.py test taskManager
-          
-  release:
-    machine: true                                        # What is this for?
-    steps:
-      - checkout
-      - run: |
-          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-          docker build -t $DOCKER_USERNAME/django.nv .   # Build the application into Docker image
-          docker push $DOCKER_USERNAME/django.nv         # Push the image into registry
 
   integration:
     docker:
@@ -35,7 +27,6 @@ jobs:
           command: |
             echo "This is an integration step"
             exit 1
-          when: always                    # Even if the job fails, continue to the next stages
 
   prod:
     docker:
@@ -52,13 +43,11 @@ workflows:
       - test:
           requires:
             - build 
-      - release:
-          requires:
-            - test
       - integration:
           requires:
-            - release
+            - test
       - prod:
           type: approval
           requires:
-            - prod
+            - integration
+EOF
