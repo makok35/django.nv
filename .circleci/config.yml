@@ -30,6 +30,17 @@ jobs:
           path: oast-results.json
           destination: safety-artifact
           when: always
+          
+ oast-frontend:
+    machine: true
+    steps:
+      - checkout
+
+      - run: docker run --rm -v $(pwd):/src -w /src hysnsec/retire --outputformat json --outputpath retirejs-output.json --severity high
+
+      - store_artifacts:
+          path: retirejs-output.json
+          destination: retirejs-artifact
 
   integration:
     docker:
@@ -57,9 +68,12 @@ workflows:
       - test:
           requires:
             - build
-      - oast:
+      - oast-frontend:
           requires:
             - test
+      - oast:
+          requires:
+            - oast-frontend
       - integration:
           requires:
             - oast
