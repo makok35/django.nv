@@ -11,7 +11,8 @@ jobs:
   test:
     docker:
       - image: python:3.6
-    requires: build
+    requires: 
+      - build
     steps:
       - checkout
       - run: |
@@ -25,7 +26,8 @@ jobs:
   integration:
     docker:
       - image: python:3.6
-    requires: build, test
+    requires: 
+      - test
     steps:
       - checkout
       - run:
@@ -36,7 +38,8 @@ jobs:
   prod:
     docker:
       - image: python:3.6
-    requires: build, test, integration
+    requires: 
+      - integration
     steps:
       - checkout
       - run: echo "This is a deploy step"
