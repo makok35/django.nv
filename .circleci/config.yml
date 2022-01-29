@@ -1,4 +1,3 @@
-cat >.circleci/config.yml<<EOF
 jobs:
   build:
     docker:
@@ -17,6 +16,17 @@ jobs:
       - run: |
           pip install -r requirements.txt
           python manage.py test taskManager
+    
+  oast:
+    machine: true
+    steps:
+      - checkout
+
+      - run: docker run -v $(pwd):/src --rm hysnsec/safety check -r /src/requirements.txt --json | tee oast-results.json
+
+      - store_artifacts:
+          path: oast-results.json
+          destination: safety-artifact
 
   integration:
     docker:
@@ -50,4 +60,3 @@ workflows:
           type: approval
           requires:
             - integration
-EOF
