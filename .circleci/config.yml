@@ -9,8 +9,6 @@ jobs:
           python manage.py check
 
   test:
-    requires: 
-      - build
     docker:
       - image: python:3.6
     steps:
@@ -18,15 +16,8 @@ jobs:
       - run: |
           pip install -r requirements.txt
           python manage.py test taskManager
-          echo "hello dude" > hello.txt
-      - store_artifacts:
-          path: hello.txt
-          destination: hello.txt
 
   integration:
-    requires: 
-      - build
-      - test
     docker:
       - image: python:3.6
     steps:
@@ -34,24 +25,60 @@ jobs:
       - run:
           command: |
             echo "This is an integration step"
-            exit 1 #|| true
+            exit 1
+          when: on_fail      # Even if the job fails, continue to the next jobs
 
   prod:
-    requires: 
-      - build
-      - test
-      - integration
     docker:
       - image: python:3.6
     steps:
       - checkout
       - run: echo "This is a deploy step"
 
+  artifact:
+    docker:
+      - image: python:3.6
+    steps:
+      - checkout
+      - run: echo "hello" > hello.txt
+      - store_artifacts:
+          path: hello.txt
+          destination: artifact-file
+
 workflows:
   version: 2
   django:
     jobs:
-      - build
+      - build:
+          filters:          # Run the job with a specific branch
+            branches:
+              only:
+                - main
       - test
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main
       - integration
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - main
       - prod
+          requires:
+            - integration
+          filters:
+            branches:
+              only:
+                - main
+      - artofact
+          requires:
+            - prod
+          filters:
+            branches:
+              only:
+                - main
