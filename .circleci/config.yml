@@ -9,10 +9,10 @@ jobs:
           python manage.py check
 
   test:
-    docker:
-      - image: python:3.6
     requires: 
       - build
+    docker:
+      - image: python:3.6
     steps:
       - checkout
       - run: |
@@ -24,10 +24,10 @@ jobs:
           destination: hello.txt
 
   integration:
-    docker:
-      - image: python:3.6
     requires: 
       - test
+    docker:
+      - image: python:3.6
     steps:
       - checkout
       - run:
@@ -36,10 +36,10 @@ jobs:
             exit 1 #|| true
 
   prod:
-    docker:
-      - image: python:3.6
     requires: 
       - integration
+    docker:
+      - image: python:3.6
     steps:
       - checkout
       - run: echo "This is a deploy step"
