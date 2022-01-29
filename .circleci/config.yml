@@ -25,18 +25,18 @@ jobs:
   integration:
     docker:
       - image: python:3.6
-    requires: test
+    requires: build, test
     steps:
       - checkout
       - run:
           command: |
             echo "This is an integration step"
-            exit 1 || true
+            exit 1 #|| true
 
   prod:
     docker:
       - image: python:3.6
-    requires: integration
+    requires: build, test, integration
     steps:
       - checkout
       - run: echo "This is a deploy step"
