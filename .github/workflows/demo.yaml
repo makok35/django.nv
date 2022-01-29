@@ -17,6 +17,7 @@ jobs:
       - run: echo "This is a test step"
 
   integration:
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - run: echo "This is an integration step"
