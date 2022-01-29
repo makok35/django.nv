@@ -25,6 +25,7 @@ jobs:
 
   integration:
     requires: 
+      - build
       - test
     docker:
       - image: python:3.6
@@ -37,6 +38,8 @@ jobs:
 
   prod:
     requires: 
+      - build
+      - test
       - integration
     docker:
       - image: python:3.6
