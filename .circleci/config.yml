@@ -60,9 +60,11 @@ jobs:
     steps:
       - checkout
 
-      - run: |
-          docker pull owasp/zap2docker-stable:2.10.0
-          docker run --user root --rm -v $(pwd):/zap/wrk:rw -w /zap owasp/zap2docker-stable:2.10.0 zap-baseline.py -t ${PROD_URL} -J zap-output.json
+      - run: 
+          command: |
+            docker pull owasp/zap2docker-stable:2.10.0
+            docker run --user root --rm -v $(pwd):/zap/wrk:rw -w /zap owasp/zap2docker-stable:2.10.0 zap-baseline.py -t ${PROD_URL} -J zap-output.json
+          when: on_fail
 
       - store_artifacts:
           path: zap-output.json
