@@ -139,6 +139,7 @@ jobs:
         
   sonarqube:
     runs-on: ubuntu-latest
+    needs: sast
     steps:
     - uses: actions/checkout@v2
       with:
@@ -154,10 +155,11 @@ jobs:
         projectBaseDir: .
         args: >
           -Dsonar.projectKey=Django
+      continue-on-error: true
 
   integration:
     runs-on: ubuntu-latest
-    needs: oast
+    needs: sonarqube
     steps:
       - run: echo "This is an integration step"
       - run: exit 1
