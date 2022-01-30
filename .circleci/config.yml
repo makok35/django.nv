@@ -54,6 +54,19 @@ jobs:
       - store_artifacts:
           path: bandit-output.json
           destination: bandit-artifact
+          
+  zap_baseline:
+    machine: true
+    steps:
+      - checkout
+
+      - run: |
+          docker pull owasp/zap2docker-stable:2.10.0
+          docker run --user root --rm -v $(pwd):/zap/wrk:rw -w /zap owasp/zap2docker-stable:2.10.0 zap-baseline.py -t ${PROD_URL} -J zap-output.json
+
+      - store_artifacts:
+          path: zap-output.json
+          destination: zap-artifact
 
   integration:
     docker:
@@ -90,9 +103,12 @@ workflows:
       - sast:
           requires:
             - secret_scanning
-      - integration:
+      - zap_baseline:
           requires:
             - sast
+      - integration:
+          requires:
+            - zap_baseline
       - prod:
           type: approval
           requires:
