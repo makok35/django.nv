@@ -101,6 +101,21 @@ jobs:
           name: Safety
           path: oast-results.json
         if: always()                        # what is this for?
+        
+  secret_scanning:
+    runs-on: ubuntu-latest
+    needs: oast
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: docker run --rm -v $(pwd):/src hysnsec/trufflehog file:///src --json > trufflehog-output.json
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: TruffleHog
+          path: trufflehog-output.json
+        if: always()                        # what is this for?
 
   integration:
     runs-on: ubuntu-latest
