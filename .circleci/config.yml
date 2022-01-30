@@ -41,6 +41,19 @@ jobs:
       - store_artifacts:
           path: trufflehog-output.json
           destination: trufflehog-artifact
+          
+  sast:
+    machine: true
+    steps:
+      - checkout
+
+      - run: 
+        command: docker run --rm -v $(pwd):/src hysnsec/bandit -r /src -f json -o /src/bandit-output.json
+        when: on_fail
+
+      - store_artifacts:
+          path: bandit-output.json
+          destination: bandit-artifact
 
   integration:
     docker:
@@ -74,9 +87,12 @@ workflows:
       - secret_scanning:
           requires:
             - oast-frontend
-      - integration:
+      - sast:
           requires:
             - secret_scanning
+      - integration:
+          requires:
+            - sast
       - prod:
           type: approval
           requires:
